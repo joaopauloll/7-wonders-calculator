@@ -54,42 +54,60 @@
         <h1 class="mb-4 text-center">Calculadora de Pontuação - 7 Wonders</h1>
         <form id="scoreForm">
           <div class="mb-3">
-            <label class="form-label">Militar</label>
-            <input type="number" class="form-control" id="militar" value="0" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Moedas</label>
-            <input type="number" class="form-control" id="moedas" value="0" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Maravilha</label>
-            <input
-              type="number"
-              class="form-control"
-              id="maravilha"
-              value="0"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Civis</label>
-            <input type="number" class="form-control" id="civis" value="0" />
+            <label class="form-label">Civil</label>
+            <input type="number" class="form-control" id="civis" />
           </div>
           <div class="mb-3">
             <label class="form-label">Comercial</label>
-            <input
-              type="number"
-              class="form-control"
-              id="comercial"
-              value="0"
-            />
+            <input type="number" class="form-control" id="comercial" />
           </div>
           <div class="mb-3">
             <label class="form-label">Guildas</label>
-            <input type="number" class="form-control" id="guildas" value="0" />
+            <input type="number" class="form-control" id="guildas" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Militar</label>
+            <input type="number" class="form-control" id="militar" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Maravilha</label>
+            <input type="number" class="form-control" id="maravilha" />
           </div>
           <div class="mb-3">
             <label class="form-label">Ciência</label>
-            <input type="number" class="form-control" id="ciencia" value="0" />
+            <div class="row">
+              <div class="col-4">
+                <label class="form-label small">Pedra</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="ciencia_pedra"
+                  min="0"
+                />
+              </div>
+              <div class="col-4">
+                <label class="form-label small">Ábaco</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="ciencia_abaco"
+                  min="0"
+                />
+              </div>
+              <div class="col-4">
+                <label class="form-label small">Engrenagem</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="ciencia_engrenagem"
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Moedas (3 moedas = 1 ponto)</label>
+            <input type="number" class="form-control" id="moedas" />
           </div>
           <button
             type="button"
@@ -114,7 +132,22 @@
         const comercial =
           parseInt(document.getElementById("comercial").value) || 0;
         const guildas = parseInt(document.getElementById("guildas").value) || 0;
-        const ciencia = parseInt(document.getElementById("ciencia").value) || 0;
+
+        // Ciência
+        const pedra =
+          parseInt(document.getElementById("ciencia_pedra").value) || 0;
+        const abaco =
+          parseInt(document.getElementById("ciencia_abaco").value) || 0;
+        const engrenagem =
+          parseInt(document.getElementById("ciencia_engrenagem").value) || 0;
+
+        // Pontos por símbolos iguais
+        const cienciaIguais =
+          pedra * pedra + abaco * abaco + engrenagem * engrenagem;
+        // Pontos por conjuntos de 3 diferentes
+        const conjuntos = Math.min(pedra, abaco, engrenagem);
+        const cienciaConjuntos = conjuntos * 7;
+        const ciencia = cienciaIguais + cienciaConjuntos;
 
         const total =
           militar + moedas + maravilha + civis + comercial + guildas + ciencia;
