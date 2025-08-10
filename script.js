@@ -12,25 +12,35 @@ function createPlayerForm(id) {
     id + 1
   }">
         </div>
-        <div class="mb-2">
-          <label class="form-label">Civil</label>
-          <input type="number" class="form-control" id="civis-${id}" />
+        <div class="row mb-2">
+          <div class="col-6">
+            <label class="form-label">Civil</label>
+            <input type="number" class="form-control" id="civis-${id}" />
+          </div>
+          <div class="col-6">
+            <label class="form-label">Comercial</label>
+            <input type="number" class="form-control" id="comercial-${id}" />
+          </div>
         </div>
-        <div class="mb-2">
-          <label class="form-label">Comercial</label>
-          <input type="number" class="form-control" id="comercial-${id}" />
+        <div class="row mb-2">
+          <div class="col-6">
+            <label class="form-label">Guildas</label>
+            <input type="number" class="form-control" id="guildas-${id}" />
+          </div>
+          <div class="col-6">
+            <label class="form-label">Militar</label>
+            <input type="number" class="form-control" id="militar-${id}" />
+          </div>
         </div>
-        <div class="mb-2">
-          <label class="form-label">Guildas</label>
-          <input type="number" class="form-control" id="guildas-${id}" />
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Militar</label>
-          <input type="number" class="form-control" id="militar-${id}" />
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Maravilha</label>
-          <input type="number" class="form-control" id="maravilha-${id}" />
+        <div class="row mb-2">
+          <div class="col-6">
+            <label class="form-label">Maravilha</label>
+            <input type="number" class="form-control" id="maravilha-${id}" />
+          </div>
+          <div class="col-6">
+            <label class="form-label">Moedas</label>
+            <input type="number" class="form-control" id="moedas-${id}" />
+          </div>
         </div>
         <div class="mb-2">
           <label class="form-label">Ciência</label>
@@ -48,10 +58,6 @@ function createPlayerForm(id) {
               <input type="number" class="form-control" id="ciencia_engrenagem-${id}" min="0" />
             </div>
           </div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Moedas (3 moedas = 1 ponto)</label>
-          <input type="number" class="form-control" id="moedas-${id}" />
         </div>
         <button type="submit" class="btn btn-primary w-100">Calcular</button>
       </form>
