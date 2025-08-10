@@ -46,15 +46,15 @@ function createPlayerForm(id) {
           <label class="form-label">Ciência</label>
           <div class="row">
             <div class="col-4">
-              <label class="form-label small">Pedra</label>
+              <label class="form-label small">Tablets</label>
               <input type="number" class="form-control" id="ciencia_pedra-${id}" min="0" />
             </div>
             <div class="col-4">
-              <label class="form-label small">Ábaco</label>
+              <label class="form-label small">Compassos</label>
               <input type="number" class="form-control" id="ciencia_abaco-${id}" min="0" />
             </div>
             <div class="col-4">
-              <label class="form-label small">Engrenagem</label>
+              <label class="form-label small">Engrenagens</label>
               <input type="number" class="form-control" id="ciencia_engrenagem-${id}" min="0" />
             </div>
           </div>
