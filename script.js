@@ -222,6 +222,7 @@ function updateTabelaPontuacao() {
             <th class="col-maravilha" data-bs-toggle="tooltip" title="Maravilha"><i class="bi bi-bank"></i></th>
             <th class="col-ciencia" data-bs-toggle="tooltip" title="Ciência"><i class="bi bi-flask"></i></th>
             <th class="col-moedas" data-bs-toggle="tooltip" title="Moedas (pontos)"><i class="bi bi-coin"></i></th>
+            <th class="col-pontuacao"><i class="bi bi-trophy-fill"></i></th>
           </tr>
         </thead>
         <tbody>
@@ -237,6 +238,7 @@ function updateTabelaPontuacao() {
               <td class="col-maravilha">${p.maravilha}</td>
               <td class="col-ciencia">${p.ciencia}</td>
               <td class="col-moedas">${p.moedas}</td>
+              <td class="col-pontuacao fw-bold">${p.pontuacao}</td>
             </tr>
           `
             )
