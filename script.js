@@ -217,53 +217,74 @@ function updateTabelaPontuacao() {
           .join("")}
       </tbody>
     </table>
-    <div class="text-center mt-2">
-      <strong>Vencedor${vencedores.length > 1 ? "es" : ""}:</strong>
-      ${vencedores.map((v) => v.nome).join(", ")} (${maxPontuacao} ponto${
-    maxPontuacao === 1 ? "" : "s"
-  })
-    </div>
   `;
 
   // Tabela detalhada
   tabelaHTML += `
     <h4 class="text-center mt-4 mb-3">Detalhamento de Pontuação</h4>
-    <table class="table table-dark table-bordered text-center align-middle">
-      <thead>
-        <tr>
-          <th><i class="bi bi-person-fill"></i></th>
-          <th class="col-civil" data-bs-toggle="tooltip" title="Civil"><i class="bi bi-building"></i></th>
-          <th class="col-comercial" data-bs-toggle="tooltip" title="Comercial"><i class="bi bi-shop"></i></th>
-          <th class="col-guildas" data-bs-toggle="tooltip" title="Guildas"><i class="bi bi-people"></i></th>
-          <th class="col-militar" data-bs-toggle="tooltip" title="Militar"><i class="bi bi-shield-fill-exclamation"></i></th>
-          <th class="col-maravilha" data-bs-toggle="tooltip" title="Maravilha"><i class="bi bi-bank"></i></th>
-          <th class="col-ciencia" data-bs-toggle="tooltip" title="Ciência"><i class="bi bi-flask"></i></th>
-          <th class="col-moedas" data-bs-toggle="tooltip" title="Moedas (pontos)"><i class="bi bi-coin"></i></th>
-        </tr>
-      </thead>
-      <tbody>
-        ${players
-          .map(
-            (p) => `
+    <div id="tabelaDetalhadaWrapper">
+      <table class="table table-dark table-bordered text-center align-middle">
+        <thead>
           <tr>
-            <td>${p.nome}</td>
-            <td class="col-civil">${p.civis}</td>
-            <td class="col-comercial">${p.comercial}</td>
-            <td class="col-guildas">${p.guildas}</td>
-            <td class="col-militar">${p.militar}</td>
-            <td class="col-maravilha">${p.maravilha}</td>
-            <td class="col-ciencia">${p.ciencia}</td>
-            <td class="col-moedas">${p.moedasPontos}</td>
+            <th><i class="bi bi-person-fill"></i></th>
+            <th class="col-civil" data-bs-toggle="tooltip" title="Civil"><i class="bi bi-building"></i></th>
+            <th class="col-comercial" data-bs-toggle="tooltip" title="Comercial"><i class="bi bi-shop"></i></th>
+            <th class="col-guildas" data-bs-toggle="tooltip" title="Guildas"><i class="bi bi-people"></i></th>
+            <th class="col-militar" data-bs-toggle="tooltip" title="Militar"><i class="bi bi-shield-fill-exclamation"></i></th>
+            <th class="col-maravilha" data-bs-toggle="tooltip" title="Maravilha"><i class="bi bi-bank"></i></th>
+            <th class="col-ciencia" data-bs-toggle="tooltip" title="Ciência"><i class="bi bi-flask"></i></th>
+            <th class="col-moedas" data-bs-toggle="tooltip" title="Moedas (pontos)"><i class="bi bi-coin"></i></th>
           </tr>
-        `
-          )
-          .join("")}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          ${players
+            .map(
+              (p) => `
+            <tr>
+              <td>${p.nome}</td>
+              <td class="col-civil">${p.civis}</td>
+              <td class="col-comercial">${p.comercial}</td>
+              <td class="col-guildas">${p.guildas}</td>
+              <td class="col-militar">${p.militar}</td>
+              <td class="col-maravilha">${p.maravilha}</td>
+              <td class="col-ciencia">${p.ciencia}</td>
+              <td class="col-moedas">${p.moedasPontos}</td>
+            </tr>
+          `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+    <div class="text-center mt-2">
+      <button id="exportImageBtn" class="btn btn-outline-light btn-sm">
+        <i class="bi bi-image"></i> Exportar como Imagem
+      </button>
+    </div>
   `;
 
   tabelaDiv.innerHTML = tabelaHTML;
 }
+
+// Função para exportar a tabela detalhada como imagem
+function exportarTabelaDetalhada() {
+  const tabela = document.getElementById("tabelaDetalhadaWrapper");
+  if (!tabela) return;
+
+  html2canvas(tabela, { backgroundColor: "#23272b" }).then((canvas) => {
+    const link = document.createElement("a");
+    link.download = "tabela_detalhada.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+}
+
+// Delegar evento para o botão (pois a tabela é recriada dinamicamente)
+document.addEventListener("click", function (e) {
+  if (e.target.closest("#exportImageBtn")) {
+    exportarTabelaDetalhada();
+  }
+});
 
 // Atualiza a tabela ao adicionar/remover jogadores
 document.getElementById("addPlayerBtn").addEventListener("click", addPlayer);
