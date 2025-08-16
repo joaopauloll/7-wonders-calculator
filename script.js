@@ -177,6 +177,7 @@ function updateTabelaPontuacao() {
     tabelaDiv.innerHTML = "";
     return;
   }
+  players.sort((a, b) => b.pontuacao - a.pontuacao);
 
   const maxPontuacao = Math.max(...players.map((p) => p.pontuacao));
   const vencedores = players.filter((p) => p.pontuacao === maxPontuacao);
