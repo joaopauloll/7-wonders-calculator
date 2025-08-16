@@ -317,7 +317,7 @@ function salvarResultados() {
   // Salva de volta
   localStorage.setItem("resultados7Wonders", JSON.stringify(historico));
 
-  alert("Resultado salvo com sucesso!");
+  alert("Partida salva com sucesso!");
 }
 
 // Função para carregar histórico e exibir no modal
@@ -327,7 +327,7 @@ function mostrarHistorico() {
   const container = document.getElementById("historyContent");
 
   if (historico.length === 0) {
-    container.innerHTML = "<p>Nenhum resultado salvo ainda.</p>";
+    container.innerHTML = "<p>Nenhuma partida salva ainda.</p>";
     return;
   }
 
