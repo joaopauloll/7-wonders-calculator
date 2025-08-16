@@ -46,3 +46,26 @@ input.form-control:focus {
   top: 10px;
   right: 10px;
 }
+
+/* Cores inspiradas nas cartas do 7 Wonders */
+.col-civil {
+  background-color: rgba(70, 130, 180, 0.3) !important; /* Azul */
+}
+.col-comercial {
+  background-color: rgba(255, 215, 0, 0.3) !important; /* Amarelo ouro */
+}
+.col-guildas {
+  background-color: rgba(128, 0, 128, 0.3) !important; /* Roxo */
+}
+.col-militar {
+  background-color: rgba(178, 34, 34, 0.3) !important; /* Vermelho */
+}
+.col-maravilha {
+  background-color: rgba(91, 227, 227, 0.3) !important; /* Cinza */
+}
+.col-moedas {
+  background-color: rgba(218, 165, 32, 0.3) !important; /* Dourado */
+}
+.col-ciencia {
+  background-color: rgba(34, 139, 34, 0.3) !important; /* Verde */
+}

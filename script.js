@@ -119,11 +119,58 @@ function getPlayersPontuacao() {
   for (let i = 0; i < playerCount; i++) {
     const playerDiv = document.getElementById(`player-${i}`);
     if (!playerDiv) continue;
+
     const nome =
       document.getElementById(`nome-${i}`).value || `Jogador ${i + 1}`;
+
+    // pegar valores (igual no calcularPontuacao)
+    const militar =
+      parseInt(document.getElementById(`militar-${i}`).value) || 0;
+    const moedas = parseInt(document.getElementById(`moedas-${i}`).value) || 0;
+    const maravilha =
+      parseInt(document.getElementById(`maravilha-${i}`).value) || 0;
+    const civis = parseInt(document.getElementById(`civis-${i}`).value) || 0;
+    const comercial =
+      parseInt(document.getElementById(`comercial-${i}`).value) || 0;
+    const guildas =
+      parseInt(document.getElementById(`guildas-${i}`).value) || 0;
+
+    const pedra =
+      parseInt(document.getElementById(`ciencia_pedra-${i}`).value) || 0;
+    const abaco =
+      parseInt(document.getElementById(`ciencia_abaco-${i}`).value) || 0;
+    const engrenagem =
+      parseInt(document.getElementById(`ciencia_engrenagem-${i}`).value) || 0;
+
+    const cienciaIguais =
+      pedra * pedra + abaco * abaco + engrenagem * engrenagem;
+    const conjuntos = Math.min(pedra, abaco, engrenagem);
+    const cienciaConjuntos = conjuntos * 7;
+    const ciencia = cienciaIguais + cienciaConjuntos;
+
+    const moedasPontos = Math.floor(moedas / 3);
+
     const pontuacao =
-      parseInt(document.getElementById(`pontuacaoTotal-${i}`).textContent) || 0;
-    players.push({ nome, pontuacao });
+      militar +
+      moedasPontos +
+      maravilha +
+      civis +
+      comercial +
+      guildas +
+      ciencia;
+
+    players.push({
+      nome,
+      pontuacao,
+      militar,
+      moedas,
+      moedasPontos,
+      maravilha,
+      civis,
+      comercial,
+      guildas,
+      ciencia,
+    });
   }
   return players;
 }
@@ -143,10 +190,10 @@ function updateTabelaPontuacao() {
     return;
   }
 
-  // Encontrar maior pontuação
   const maxPontuacao = Math.max(...players.map((p) => p.pontuacao));
   const vencedores = players.filter((p) => p.pontuacao === maxPontuacao);
 
+  // Tabela resumida
   let tabelaHTML = `
     <h4 class="text-center mb-3">Tabela de Pontuação</h4>
     <table class="table table-dark table-striped table-bordered text-center align-middle">
@@ -163,20 +210,56 @@ function updateTabelaPontuacao() {
               `<tr${
                 p.pontuacao === maxPontuacao ? ' class="table-success"' : ""
               }>
-                <td>${p.nome}</td>
-                <td>${p.pontuacao}</td>
-              </tr>`
+            <td>${p.nome}</td>
+            <td>${p.pontuacao}</td>
+          </tr>`
           )
           .join("")}
       </tbody>
     </table>
     <div class="text-center mt-2">
-      <strong>Vencedor${
-        vencedores.length > 1 ? "es" : ""
-      }:</strong> ${vencedores
-    .map((v) => v.nome)
-    .join(", ")} (${maxPontuacao} ponto${maxPontuacao === 1 ? "" : "s"})
+      <strong>Vencedor${vencedores.length > 1 ? "es" : ""}:</strong>
+      ${vencedores.map((v) => v.nome).join(", ")} (${maxPontuacao} ponto${
+    maxPontuacao === 1 ? "" : "s"
+  })
     </div>
+  `;
+
+  // Tabela detalhada
+  tabelaHTML += `
+    <h4 class="text-center mt-4 mb-3">Detalhamento de Pontuação</h4>
+    <table class="table table-dark table-bordered text-center align-middle">
+      <thead>
+        <tr>
+          <th><i class="bi bi-person-fill"></i></th>
+          <th class="col-civil" data-bs-toggle="tooltip" title="Civil"><i class="bi bi-building"></i></th>
+          <th class="col-comercial" data-bs-toggle="tooltip" title="Comercial"><i class="bi bi-shop"></i></th>
+          <th class="col-guildas" data-bs-toggle="tooltip" title="Guildas"><i class="bi bi-people"></i></th>
+          <th class="col-militar" data-bs-toggle="tooltip" title="Militar"><i class="bi bi-shield-fill-exclamation"></i></th>
+          <th class="col-maravilha" data-bs-toggle="tooltip" title="Maravilha"><i class="bi bi-bank"></i></th>
+          <th class="col-ciencia" data-bs-toggle="tooltip" title="Ciência"><i class="bi bi-flask"></i></th>
+          <th class="col-moedas" data-bs-toggle="tooltip" title="Moedas (pontos)"><i class="bi bi-coin"></i></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${players
+          .map(
+            (p) => `
+          <tr>
+            <td>${p.nome}</td>
+            <td class="col-civil">${p.civis}</td>
+            <td class="col-comercial">${p.comercial}</td>
+            <td class="col-guildas">${p.guildas}</td>
+            <td class="col-militar">${p.militar}</td>
+            <td class="col-maravilha">${p.maravilha}</td>
+            <td class="col-ciencia">${p.ciencia}</td>
+            <td class="col-moedas">${p.moedasPontos}</td>
+          </tr>
+        `
+          )
+          .join("")}
+      </tbody>
+    </table>
   `;
 
   tabelaDiv.innerHTML = tabelaHTML;
