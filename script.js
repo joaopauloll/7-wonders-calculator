@@ -183,34 +183,34 @@ function updateTabelaPontuacao() {
   const vencedores = players.filter((p) => p.pontuacao === maxPontuacao);
 
   // Tabela resumida
-  let tabelaHTML = `
-    <h4 class="text-center mb-3">Tabela de Pontuação</h4>
-    <table class="table table-dark table-striped table-bordered text-center align-middle">
-      <thead>
-        <tr>
-          <th>Jogador</th>
-          <th>Pontuação</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${players
-          .map(
-            (p) =>
-              `<tr${
-                p.pontuacao === maxPontuacao ? ' class="table-success"' : ""
-              }>
-            <td>${p.nome}</td>
-            <td>${p.pontuacao}</td>
-          </tr>`
-          )
-          .join("")}
-      </tbody>
-    </table>
-  `;
+  // let tabelaHTML = `
+  //   <h4 class="text-center mb-3">Tabela de Pontuação</h4>
+  //   <table class="table table-dark table-striped table-bordered text-center align-middle">
+  //     <thead>
+  //       <tr>
+  //         <th>Jogador</th>
+  //         <th>Pontuação</th>
+  //       </tr>
+  //     </thead>
+  //     <tbody>
+  //       ${players
+  //         .map(
+  //           (p) =>
+  //             `<tr${
+  //               p.pontuacao === maxPontuacao ? ' class="table-success"' : ""
+  //             }>
+  //           <td>${p.nome}</td>
+  //           <td>${p.pontuacao}</td>
+  //         </tr>`
+  //         )
+  //         .join("")}
+  //     </tbody>
+  //   </table>
+  // `;
 
   // Tabela detalhada
-  tabelaHTML += `
-    <h4 class="text-center mt-4 mb-3">Detalhamento de Pontuação</h4>
+  let tabelaHTML = `
+    <h4 class="text-center mt-4 mb-3">Tabela de Pontuação</h4>
     <div class="tabela-detalhada-container">
       <table class="table table-dark table-bordered text-center align-middle tabela-detalhada">
         <thead>
