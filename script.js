@@ -219,7 +219,7 @@ function updateTabelaPontuacao() {
             <th class="col-civil" data-bs-toggle="tooltip" title="Civil"><i class="bi bi-building"></i></th>
             <th class="col-comercial" data-bs-toggle="tooltip" title="Comercial"><i class="bi bi-shop"></i></th>
             <th class="col-guildas" data-bs-toggle="tooltip" title="Guildas"><i class="bi bi-people"></i></th>
-            <th class="col-militar" data-bs-toggle="tooltip" title="Militar"><i class="bi bi-shield-fill-exclamation"></i></th>
+            <th class="col-militar" data-bs-toggle="tooltip" title="Militar"><i class="bi bi-shield-exclamation"></i></th>
             <th class="col-maravilha" data-bs-toggle="tooltip" title="Maravilha"><i class="bi bi-bank"></i></th>
             <th class="col-ciencia" data-bs-toggle="tooltip" title="Ciência"><i class="bi bi-flask"></i></th>
             <th class="col-moedas" data-bs-toggle="tooltip" title="Moedas (pontos)"><i class="bi bi-coin"></i></th>
