@@ -252,6 +252,29 @@ function updateTabelaPontuacao() {
         <i class="bi bi-image"></i> Exportar como Imagem
       </button>
     </div>
+    <div class="d-flex gap-2 mb-3 mt-4">
+      <button id="saveResults" class="btn btn-warning flex-grow-1">Salvar Partida</button>
+      <button id="showHistory" class="btn btn-info flex-grow-1" data-bs-toggle="modal" data-bs-target="#historyModal">Partidas Anteriores</button>
+    </div>
+
+    <!-- Modal para histórico -->
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content bg-dark text-light">
+          <div class="modal-header">
+            <h5 class="modal-title" id="historyModalLabel">Histórico de Partidas</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="historyContent">
+            <!-- Histórico será inserido aqui -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   `;
 
   tabelaDiv.innerHTML = tabelaHTML;
@@ -276,6 +299,84 @@ function exportarTabelaDetalhada() {
 document.addEventListener("click", function (e) {
   if (e.target.closest("#exportImageBtn")) {
     exportarTabelaDetalhada();
+  }
+});
+
+// Função para salvar resultados atuais no LocalStorage
+function salvarResultados() {
+  const players = getPlayersPontuacao(); // array com {nome, pontuacao}
+  if (players.length === 0) return;
+
+  // Recupera histórico atual
+  const historico =
+    JSON.parse(localStorage.getItem("resultados7Wonders")) || [];
+
+  // Adiciona resultado atual com data
+  historico.push({ date: new Date().toLocaleString(), players });
+
+  // Salva de volta
+  localStorage.setItem("resultados7Wonders", JSON.stringify(historico));
+
+  alert("Resultado salvo com sucesso!");
+}
+
+// Função para carregar histórico e exibir no modal
+function mostrarHistorico() {
+  const historico =
+    JSON.parse(localStorage.getItem("resultados7Wonders")) || [];
+  const container = document.getElementById("historyContent");
+
+  if (historico.length === 0) {
+    container.innerHTML = "<p>Nenhum resultado salvo ainda.</p>";
+    return;
+  }
+
+  // Monta HTML do histórico
+  let html = historico
+    .map((entry, index) => {
+      const rows = entry.players
+        .sort((a, b) => b.pontuacao - a.pontuacao)
+        .map((p) => `<tr><td>${p.nome}</td><td>${p.pontuacao}</td></tr>`)
+        .join("");
+
+      return `
+      <div class="history-entry mb-4 border border-secondary rounded p-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">Partida ${index + 1} - ${entry.date}</h6>
+          <button class="btn btn-sm btn-danger" onclick="removerPartida(${index})">Remover</button>
+        </div>
+        <table class="table table-dark table-striped text-center mb-0">
+          <thead>
+            <tr><th>Jogador</th><th>Pontuação</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+    })
+    .join("");
+
+  container.innerHTML = html;
+}
+
+// Função para remover uma Partida específica
+function removerPartida(index) {
+  const historico =
+    JSON.parse(localStorage.getItem("resultados7Wonders")) || [];
+  historico.splice(index, 1); // remove a partida do array
+  localStorage.setItem("resultados7Wonders", JSON.stringify(historico));
+  mostrarHistorico(); // atualiza o modal imediatamente
+}
+
+document.addEventListener("click", function (e) {
+  if (e.target.closest("#saveResults")) {
+    salvarResultados();
+  }
+});
+
+document.addEventListener("click", function (e) {
+  if (e.target.closest("#showHistory")) {
+    mostrarHistorico();
   }
 });
 
