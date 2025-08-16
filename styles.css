@@ -53,13 +53,14 @@ input.form-control:focus {
 }
 
 .tabela-detalhada-container {
-  overflow-x: visible; /* permite rolar horizontalmente */
+  overflow-x: visible;
   display: flex; /* centraliza no eixo horizontal */
   justify-content: center;
 }
 
 .tabela-detalhada {
   margin: 0 auto; /* garante centralização */
+  min-width: max-content; /* garante que a tabela não fique muito larga */
 }
 
 /* Cores inspiradas nas cartas do 7 Wonders */
