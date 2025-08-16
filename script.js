@@ -104,11 +104,8 @@ function calcularPontuacao(id) {
   const cienciaConjuntos = conjuntos * 7;
   const ciencia = cienciaIguais + cienciaConjuntos;
 
-  // Moedas: 3 moedas = 1 ponto
-  const moedasPontos = Math.floor(moedas / 3);
-
   const total =
-    militar + moedasPontos + maravilha + civis + comercial + guildas + ciencia;
+    militar + moedas + maravilha + civis + comercial + guildas + ciencia;
   document.getElementById(`pontuacaoTotal-${id}`).textContent = total;
 
   updateTabelaPontuacao();
@@ -148,23 +145,14 @@ function getPlayersPontuacao() {
     const cienciaConjuntos = conjuntos * 7;
     const ciencia = cienciaIguais + cienciaConjuntos;
 
-    const moedasPontos = Math.floor(moedas / 3);
-
     const pontuacao =
-      militar +
-      moedasPontos +
-      maravilha +
-      civis +
-      comercial +
-      guildas +
-      ciencia;
+      militar + moedas + maravilha + civis + comercial + guildas + ciencia;
 
     players.push({
       nome,
       pontuacao,
       militar,
       moedas,
-      moedasPontos,
       maravilha,
       civis,
       comercial,
@@ -241,14 +229,14 @@ function updateTabelaPontuacao() {
             .map(
               (p) => `
             <tr>
-              <td>${p.nome}</td>
+              <td style="word-wrap: break-word">${p.nome}</td>
               <td class="col-civil">${p.civis}</td>
               <td class="col-comercial">${p.comercial}</td>
               <td class="col-guildas">${p.guildas}</td>
               <td class="col-militar">${p.militar}</td>
               <td class="col-maravilha">${p.maravilha}</td>
               <td class="col-ciencia">${p.ciencia}</td>
-              <td class="col-moedas">${p.moedasPontos}</td>
+              <td class="col-moedas">${p.moedas}</td>
             </tr>
           `
             )
