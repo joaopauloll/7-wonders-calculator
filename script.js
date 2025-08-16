@@ -210,11 +210,11 @@ function updateTabelaPontuacao() {
   // Tabela detalhada
   tabelaHTML += `
     <h4 class="text-center mt-4 mb-3">Detalhamento de Pontuação</h4>
-    <div id="tabelaDetalhadaWrapper">
-      <table class="table table-dark table-bordered text-center align-middle">
+    <div class="tabela-detalhada-container">
+      <table class="table table-dark table-bordered text-center align-middle tabela-detalhada">
         <thead>
           <tr>
-            <th><i class="bi bi-person-fill"></i></th>
+            <th class="nome-jogador"><i class="bi bi-person-fill"></i></th>
             <th class="col-civil" data-bs-toggle="tooltip" title="Civil"><i class="bi bi-building"></i></th>
             <th class="col-comercial" data-bs-toggle="tooltip" title="Comercial"><i class="bi bi-shop"></i></th>
             <th class="col-guildas" data-bs-toggle="tooltip" title="Guildas"><i class="bi bi-people"></i></th>
@@ -230,7 +230,7 @@ function updateTabelaPontuacao() {
             .map(
               (p) => `
             <tr>
-              <td style="word-wrap: break-word">${p.nome}</td>
+              <td class="nome-jogador">${p.nome}</td>
               <td class="col-civil">${p.civis}</td>
               <td class="col-comercial">${p.comercial}</td>
               <td class="col-guildas">${p.guildas}</td>
@@ -246,7 +246,7 @@ function updateTabelaPontuacao() {
         </tbody>
       </table>
     </div>
-    <div class="text-center mt-2">
+    <div class="text-center mt-4">
       <button id="exportImageBtn" class="btn btn-outline-light btn-sm">
         <i class="bi bi-image"></i> Exportar como Imagem
       </button>
@@ -258,10 +258,12 @@ function updateTabelaPontuacao() {
 
 // Função para exportar a tabela detalhada como imagem
 function exportarTabelaDetalhada() {
-  const tabela = document.getElementById("tabelaDetalhadaWrapper");
-  if (!tabela) return;
+  const container = document.querySelector(".tabela-detalhada-container");
+  if (!container) return;
 
-  html2canvas(tabela, { backgroundColor: "#23272b" }).then((canvas) => {
+  html2canvas(container.querySelector("table"), {
+    backgroundColor: "#23272b",
+  }).then((canvas) => {
     const link = document.createElement("a");
     link.download = "tabela_detalhada.png";
     link.href = canvas.toDataURL("image/png");
