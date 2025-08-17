@@ -1,5 +1,6 @@
 let playerCount = 0;
 let playersData = [];
+let rodadaParaRemover = null;
 
 function createPlayerForm(id) {
   return `
@@ -317,7 +318,10 @@ function salvarResultados() {
   // Salva de volta
   localStorage.setItem("resultados7Wonders", JSON.stringify(historico));
 
-  alert("Partida salva com sucesso!");
+  const modal = new bootstrap.Modal(
+    document.getElementById("saveSuccessModal")
+  );
+  modal.show();
 }
 
 // Função para carregar histórico e exibir no modal
@@ -343,7 +347,7 @@ function mostrarHistorico() {
       <div class="history-entry mb-4 border border-secondary rounded p-2">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <h6 class="mb-0">Partida ${index + 1} - ${entry.date}</h6>
-          <button class="btn btn-sm btn-danger" onclick="removerPartida(${index})">Remover</button>
+          <button class="btn btn-sm btn-danger" onclick="confirmarRemocao(${index})">Remover</button>
         </div>
         <table class="table table-dark table-striped text-center mb-0">
           <thead>
@@ -359,14 +363,29 @@ function mostrarHistorico() {
   container.innerHTML = html;
 }
 
-// Função para remover uma Partida específica
-function removerPartida(index) {
-  const historico =
-    JSON.parse(localStorage.getItem("resultados7Wonders")) || [];
-  historico.splice(index, 1); // remove a partida do array
-  localStorage.setItem("resultados7Wonders", JSON.stringify(historico));
-  mostrarHistorico(); // atualiza o modal imediatamente
+function confirmarRemocao(index) {
+  rodadaParaRemover = index;
+  const modal = new bootstrap.Modal(
+    document.getElementById("confirmDeleteModal")
+  );
+  modal.show();
 }
+
+document
+  .getElementById("confirmDeleteBtn")
+  .addEventListener("click", function () {
+    if (rodadaParaRemover !== null) {
+      const historico =
+        JSON.parse(localStorage.getItem("resultados7Wonders")) || [];
+      historico.splice(rodadaParaRemover, 1);
+      localStorage.setItem("resultados7Wonders", JSON.stringify(historico));
+      mostrarHistorico();
+      rodadaParaRemover = null;
+      bootstrap.Modal.getInstance(
+        document.getElementById("confirmDeleteModal")
+      ).hide();
+    }
+  });
 
 document.addEventListener("click", function (e) {
   if (e.target.closest("#saveResults")) {
