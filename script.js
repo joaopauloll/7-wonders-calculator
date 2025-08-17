@@ -4,6 +4,8 @@ let playersData = [];
 let rodadaParaRemover = null;
 let gameMode = "7wonders"; // padrão
 
+atualizarHistoricoParaGameMode();
+
 document.querySelectorAll("input[name='gameMode']").forEach((radio) => {
   radio.addEventListener("change", (e) => {
     const newMode = e.target.value;
@@ -452,6 +454,26 @@ function confirmarRemocao(index) {
     document.getElementById("confirmDeleteModal")
   );
   modal.show();
+}
+
+function atualizarHistoricoParaGameMode() {
+  const historico =
+    JSON.parse(localStorage.getItem("resultados7Wonders")) || [];
+  let alterado = false;
+
+  historico.forEach((entry) => {
+    if (!entry.hasOwnProperty("gameMode")) {
+      entry.gameMode = "7wonders"; // adiciona o gameMode padrão
+      alterado = true;
+    }
+  });
+
+  if (alterado) {
+    localStorage.setItem("resultados7Wonders", JSON.stringify(historico));
+    console.log(
+      "Histórico atualizado com gameMode padrão para partidas antigas."
+    );
+  }
 }
 
 document
