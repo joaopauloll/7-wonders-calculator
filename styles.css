@@ -77,11 +77,14 @@ input.form-control:focus {
   background-color: rgba(178, 34, 34, 0.3) !important; /* Vermelho */
 }
 .col-maravilha {
-  background-color: rgba(91, 227, 227, 0.3) !important; /* Cinza */
+  background-color: rgba(91, 227, 227, 0.3) !important; /* Azul claro */
 }
 .col-moedas {
   background-color: rgba(218, 165, 32, 0.3) !important; /* Dourado */
 }
 .col-ciencia {
   background-color: rgba(34, 139, 34, 0.3) !important; /* Verde */
+}
+.col-progresso {
+  background-color: rgba(40, 59, 141, 0.466) !important; /* Cinza */
 }

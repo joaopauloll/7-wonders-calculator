@@ -18,13 +18,116 @@
     <div class="container mt-3 mb-3">
       <div class="form-container">
         <h1 class="mb-4 text-center">Calculadora de Pontuação - 7 Wonders</h1>
+        <div class="text-center mb-3">
+          <div class="btn-group" role="group" aria-label="Escolha do jogo">
+            <input
+              type="radio"
+              class="btn-check"
+              name="gameMode"
+              id="mode7wonders"
+              value="7wonders"
+              checked
+            />
+            <label class="btn btn-outline-light" for="mode7wonders"
+              >7 Wonders</label
+            >
+
+            <input
+              type="radio"
+              class="btn-check"
+              name="gameMode"
+              id="mode7wondersDuel"
+              value="7wondersDuel"
+            />
+            <label class="btn btn-outline-light" for="mode7wondersDuel"
+              >7 Wonders Duel</label
+            >
+          </div>
+        </div>
         <div id="players"></div>
         <button id="addPlayerBtn" class="btn btn-success w-100 mb-3">
           Adicionar Jogador
         </button>
       </div>
     </div>
-    <!-- Modal de confirmação -->
+    <!-- Modal para histórico -->
+    <div
+      class="modal fade"
+      id="historyModal"
+      tabindex="-1"
+      aria-labelledby="historyModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content bg-dark text-light">
+          <div class="modal-header">
+            <h5 class="modal-title" id="historyModalLabel">
+              Histórico de Partidas
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body" id="historyContent">
+            <div
+              class="btn-group mb-3 w-100"
+              role="group"
+              aria-label="Filtro de jogo"
+            >
+              <input
+                type="radio"
+                class="btn-check"
+                name="filtroJogo"
+                id="filtroTodos"
+                value="all"
+                checked
+              />
+              <label class="btn btn-outline-light" for="filtroTodos"
+                >Todos</label
+              >
+
+              <input
+                type="radio"
+                class="btn-check"
+                name="filtroJogo"
+                id="filtro7W"
+                value="7wonders"
+              />
+              <label class="btn btn-outline-light" for="filtro7W"
+                >7 Wonders</label
+              >
+
+              <input
+                type="radio"
+                class="btn-check"
+                name="filtroJogo"
+                id="filtro7WDuel"
+                value="7wondersDuel"
+              />
+              <label class="btn btn-outline-light" for="filtro7WDuel"
+                >7 Wonders Duel</label
+              >
+            </div>
+            <div id="historyEntries">
+              <!-- Histórico será inserido aqui -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal de confirmação de exclusão -->
     <div
       class="modal fade"
       id="confirmDeleteModal"

@@ -1,11 +1,93 @@
 let playerCount = 0;
+let idCount = 0;
 let playersData = [];
 let rodadaParaRemover = null;
+let gameMode = "7wonders"; // padrão
+
+document.querySelectorAll("input[name='gameMode']").forEach((radio) => {
+  radio.addEventListener("change", (e) => {
+    const newMode = e.target.value;
+
+    // Verifica se algum campo dos jogadores está preenchido
+    let algumPreenchido = false;
+    for (let i = 0; i < playerCount; i++) {
+      const playerDiv = document.getElementById(`player-${i}`);
+      if (!playerDiv) continue;
+      const inputs = playerDiv.querySelectorAll("input");
+      inputs.forEach((input) => {
+        if (input.value) algumPreenchido = true;
+      });
+      if (algumPreenchido) break;
+    }
+
+    // Se tiver algum preenchido, pergunta antes de mudar
+    if (algumPreenchido) {
+      if (
+        !confirm(
+          "Você tem certeza de que deseja mudar o modo de jogo? Isso irá redefinir todos os jogadores e suas pontuações."
+        )
+      ) {
+        // Reverte o radio para o anterior
+        document.querySelector(`input[value='${gameMode}']`).checked = true;
+        return;
+      }
+    }
+
+    // Limpa os players e reseta contador
+    document.getElementById("players").innerHTML = "";
+    playerCount = 0;
+    idCount = 0;
+    gameMode = newMode;
+
+    // Adiciona um player vazio inicial
+    if (gameMode === "7wonders") {
+      addPlayer();
+      document.getElementById("addPlayerBtn").classList.remove("d-none");
+    } else if (gameMode === "7wondersDuel") {
+      addPlayer();
+      addPlayer();
+      document.getElementById("addPlayerBtn").classList.add("d-none");
+      document.getElementById("removePlayerBtn(0)").classList.add("d-none");
+      document.getElementById("removePlayerBtn(1)").classList.add("d-none");
+    }
+  });
+});
 
 function createPlayerForm(id) {
+  const scienceField =
+    gameMode === "7wonders"
+      ? `
+      <div class="mb-3">
+        <label class="form-label">Ciência</label>
+        <div class="row">
+          <div class="col-4">
+            <label class="form-label small">Tablets</label>
+            <input type="number" class="form-control" id="ciencia_pedra-${id}" min="0" />
+          </div>
+          <div class="col-4">
+            <label class="form-label small">Compassos</label>
+            <input type="number" class="form-control" id="ciencia_abaco-${id}" min="0" />
+          </div>
+          <div class="col-4">
+            <label class="form-label small">Engrenagens</label>
+            <input type="number" class="form-control" id="ciencia_engrenagem-${id}" min="0" />
+          </div>
+        </div>
+      </div>`
+      : `
+      <div class="row mb-3">
+        <div class="col-6">
+          <label class="form-label">Ciência</label>
+          <input type="number" class="form-control" id="ciencia-${id}" min="0" />
+        </div>
+        <div class="col-6">
+          <label class="form-label">Progresso</label>
+          <input type="number" class="form-control" id="progresso-${id}" min="0" />
+        </div>
+      </div>`;
   return `
     <div class="player-block" id="player-${id}">
-      <button type="button" class="btn btn-danger btn-sm remove-player-btn" onclick="removePlayer(${id})">Remover</button>
+      <button type="button" class="btn btn-danger btn-sm remove-player-btn" id="removePlayerBtn(${id})" onclick="removePlayer(${id})">Remover</button>
       <form onsubmit="event.preventDefault(); calcularPontuacao(${id});">
         <div class="mb-2">
           <label class="form-label">Nome</label>
@@ -43,23 +125,7 @@ function createPlayerForm(id) {
             <input type="number" class="form-control" id="moedas-${id}" />
           </div>
         </div>
-        <div class="mb-2">
-          <label class="form-label">Ciência</label>
-          <div class="row">
-            <div class="col-4">
-              <label class="form-label small">Tablets</label>
-              <input type="number" class="form-control" id="ciencia_pedra-${id}" min="0" />
-            </div>
-            <div class="col-4">
-              <label class="form-label small">Compassos</label>
-              <input type="number" class="form-control" id="ciencia_abaco-${id}" min="0" />
-            </div>
-            <div class="col-4">
-              <label class="form-label small">Engrenagens</label>
-              <input type="number" class="form-control" id="ciencia_engrenagem-${id}" min="0" />
-            </div>
-          </div>
-        </div>
+        ${scienceField}
         <button type="submit" class="btn btn-primary w-100">Calcular</button>
       </form>
       <div class="mt-2 text-center">
@@ -71,15 +137,21 @@ function createPlayerForm(id) {
 
 function addPlayer() {
   const playersDiv = document.getElementById("players");
-  playersDiv.insertAdjacentHTML("beforeend", createPlayerForm(playerCount));
+  playersDiv.insertAdjacentHTML("beforeend", createPlayerForm(idCount));
   playerCount++;
+  idCount++;
   updateTabelaPontuacao();
+  if (playerCount === 7) {
+    document.getElementById("addPlayerBtn").classList.add("d-none");
+  }
 }
 
 function removePlayer(id) {
   const playerDiv = document.getElementById(`player-${id}`);
   if (playerDiv) playerDiv.remove();
+  playerCount--;
   updateTabelaPontuacao();
+  document.getElementById("addPlayerBtn").classList.remove("d-none");
 }
 
 function calcularPontuacao(id) {
@@ -92,21 +164,38 @@ function calcularPontuacao(id) {
     parseInt(document.getElementById(`comercial-${id}`).value) || 0;
   const guildas = parseInt(document.getElementById(`guildas-${id}`).value) || 0;
 
-  // Ciência
-  const pedra =
-    parseInt(document.getElementById(`ciencia_pedra-${id}`).value) || 0;
-  const abaco =
-    parseInt(document.getElementById(`ciencia_abaco-${id}`).value) || 0;
-  const engrenagem =
-    parseInt(document.getElementById(`ciencia_engrenagem-${id}`).value) || 0;
+  let ciencia = 0;
+  let progresso = 0;
 
-  const cienciaIguais = pedra * pedra + abaco * abaco + engrenagem * engrenagem;
-  const conjuntos = Math.min(pedra, abaco, engrenagem);
-  const cienciaConjuntos = conjuntos * 7;
-  const ciencia = cienciaIguais + cienciaConjuntos;
+  if (gameMode === "7wonders") {
+    // Ciência padrão 7 Wonders
+    const pedra =
+      parseInt(document.getElementById(`ciencia_pedra-${id}`).value) || 0;
+    const abaco =
+      parseInt(document.getElementById(`ciencia_abaco-${id}`).value) || 0;
+    const engrenagem =
+      parseInt(document.getElementById(`ciencia_engrenagem-${id}`).value) || 0;
+
+    const cienciaIguais =
+      pedra * pedra + abaco * abaco + engrenagem * engrenagem;
+    const conjuntos = Math.min(pedra, abaco, engrenagem);
+    const cienciaConjuntos = conjuntos * 7;
+    ciencia = cienciaIguais + cienciaConjuntos;
+  } else if (gameMode === "7wondersDuel") {
+    // Ciência direta em 7 Wonders Duel
+    ciencia = parseInt(document.getElementById(`ciencia-${id}`).value) || 0;
+    progresso = parseInt(document.getElementById(`progresso-${id}`).value) || 0;
+  }
 
   const total =
-    militar + moedas + maravilha + civis + comercial + guildas + ciencia;
+    militar +
+    moedas +
+    maravilha +
+    civis +
+    comercial +
+    guildas +
+    ciencia +
+    progresso;
   document.getElementById(`pontuacaoTotal-${id}`).textContent = total;
 
   updateTabelaPontuacao();
@@ -114,14 +203,13 @@ function calcularPontuacao(id) {
 
 function getPlayersPontuacao() {
   const players = [];
-  for (let i = 0; i < playerCount; i++) {
+  for (let i = 0; i < idCount; i++) {
     const playerDiv = document.getElementById(`player-${i}`);
     if (!playerDiv) continue;
 
     const nome =
       document.getElementById(`nome-${i}`).value || `Jogador ${i + 1}`;
 
-    // pegar valores (igual no calcularPontuacao)
     const militar =
       parseInt(document.getElementById(`militar-${i}`).value) || 0;
     const moedas = parseInt(document.getElementById(`moedas-${i}`).value) || 0;
@@ -133,21 +221,37 @@ function getPlayersPontuacao() {
     const guildas =
       parseInt(document.getElementById(`guildas-${i}`).value) || 0;
 
-    const pedra =
-      parseInt(document.getElementById(`ciencia_pedra-${i}`).value) || 0;
-    const abaco =
-      parseInt(document.getElementById(`ciencia_abaco-${i}`).value) || 0;
-    const engrenagem =
-      parseInt(document.getElementById(`ciencia_engrenagem-${i}`).value) || 0;
+    let ciencia = 0;
+    let progresso = 0;
 
-    const cienciaIguais =
-      pedra * pedra + abaco * abaco + engrenagem * engrenagem;
-    const conjuntos = Math.min(pedra, abaco, engrenagem);
-    const cienciaConjuntos = conjuntos * 7;
-    const ciencia = cienciaIguais + cienciaConjuntos;
+    if (gameMode === "7wonders") {
+      const pedra =
+        parseInt(document.getElementById(`ciencia_pedra-${i}`).value) || 0;
+      const abaco =
+        parseInt(document.getElementById(`ciencia_abaco-${i}`).value) || 0;
+      const engrenagem =
+        parseInt(document.getElementById(`ciencia_engrenagem-${i}`).value) || 0;
+
+      const cienciaIguais =
+        pedra * pedra + abaco * abaco + engrenagem * engrenagem;
+      const conjuntos = Math.min(pedra, abaco, engrenagem);
+      const cienciaConjuntos = conjuntos * 7;
+      ciencia = cienciaIguais + cienciaConjuntos;
+    } else if (gameMode === "7wondersDuel") {
+      ciencia = parseInt(document.getElementById(`ciencia-${i}`).value) || 0;
+      progresso =
+        parseInt(document.getElementById(`progresso-${i}`).value) || 0;
+    }
 
     const pontuacao =
-      militar + moedas + maravilha + civis + comercial + guildas + ciencia;
+      militar +
+      moedas +
+      maravilha +
+      civis +
+      comercial +
+      guildas +
+      ciencia +
+      progresso;
 
     players.push({
       nome,
@@ -159,6 +263,7 @@ function getPlayersPontuacao() {
       comercial,
       guildas,
       ciencia,
+      progresso,
     });
   }
   return players;
@@ -183,33 +288,6 @@ function updateTabelaPontuacao() {
   const maxPontuacao = Math.max(...players.map((p) => p.pontuacao));
   const vencedores = players.filter((p) => p.pontuacao === maxPontuacao);
 
-  // Tabela resumida
-  // let tabelaHTML = `
-  //   <h4 class="text-center mb-3">Tabela de Pontuação</h4>
-  //   <table class="table table-dark table-striped table-bordered text-center align-middle">
-  //     <thead>
-  //       <tr>
-  //         <th>Jogador</th>
-  //         <th>Pontuação</th>
-  //       </tr>
-  //     </thead>
-  //     <tbody>
-  //       ${players
-  //         .map(
-  //           (p) =>
-  //             `<tr${
-  //               p.pontuacao === maxPontuacao ? ' class="table-success"' : ""
-  //             }>
-  //           <td>${p.nome}</td>
-  //           <td>${p.pontuacao}</td>
-  //         </tr>`
-  //         )
-  //         .join("")}
-  //     </tbody>
-  //   </table>
-  // `;
-
-  // Tabela detalhada
   let tabelaHTML = `
     <h4 class="text-center mt-4 mb-3">Tabela de Pontuação</h4>
     <div class="tabela-detalhada-container">
@@ -223,6 +301,11 @@ function updateTabelaPontuacao() {
             <th class="col-militar" data-bs-toggle="tooltip" title="Militar"><i class="bi bi-shield-exclamation"></i></th>
             <th class="col-maravilha" data-bs-toggle="tooltip" title="Maravilha"><i class="bi bi-bank"></i></th>
             <th class="col-ciencia" data-bs-toggle="tooltip" title="Ciência"><i class="bi bi-flask"></i></th>
+            ${
+              gameMode === "7wondersDuel"
+                ? `<th class="col-progresso" data-bs-toggle="tooltip" title="Progresso"><i class="bi bi-bar-chart-line-fill"></i></th>`
+                : ""
+            }
             <th class="col-moedas" data-bs-toggle="tooltip" title="Moedas (pontos)"><i class="bi bi-coin"></i></th>
             <th class="col-pontuacao"><i class="bi bi-trophy-fill"></i></th>
           </tr>
@@ -239,6 +322,11 @@ function updateTabelaPontuacao() {
               <td class="col-militar">${p.militar}</td>
               <td class="col-maravilha">${p.maravilha}</td>
               <td class="col-ciencia">${p.ciencia}</td>
+              ${
+                gameMode === "7wondersDuel"
+                  ? `<td class="col-progresso">${p.progresso}</td>`
+                  : ""
+              }
               <td class="col-moedas">${p.moedas}</td>
               <td class="col-pontuacao fw-bold">${p.pontuacao}</td>
             </tr>
@@ -254,28 +342,9 @@ function updateTabelaPontuacao() {
       </button>
     </div>
     <div class="d-flex gap-2 mb-3 mt-4">
+    <button id="showHistory" class="btn btn-info flex-grow-1" data-bs-toggle="modal" data-bs-target="#historyModal">Histórico de Partidas</button>
       <button id="saveResults" class="btn btn-warning flex-grow-1">Salvar Partida</button>
-      <button id="showHistory" class="btn btn-info flex-grow-1" data-bs-toggle="modal" data-bs-target="#historyModal">Partidas Anteriores</button>
     </div>
-
-    <!-- Modal para histórico -->
-    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-scrollable modal-lg">
-        <div class="modal-content bg-dark text-light">
-          <div class="modal-header">
-            <h5 class="modal-title" id="historyModalLabel">Histórico de Partidas</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" id="historyContent">
-            <!-- Histórico será inserido aqui -->
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
   `;
 
   tabelaDiv.innerHTML = tabelaHTML;
@@ -313,7 +382,11 @@ function salvarResultados() {
     JSON.parse(localStorage.getItem("resultados7Wonders")) || [];
 
   // Adiciona resultado atual com data
-  historico.push({ date: new Date().toLocaleString(), players });
+  historico.push({
+    date: new Date().toLocaleString(),
+    gameMode: gameMode,
+    players: players,
+  });
 
   // Salva de volta
   localStorage.setItem("resultados7Wonders", JSON.stringify(historico));
@@ -326,27 +399,37 @@ function salvarResultados() {
 
 // Função para carregar histórico e exibir no modal
 function mostrarHistorico() {
+  const filtro = document.querySelector(
+    "input[name='filtroJogo']:checked"
+  ).value;
   const historico =
     JSON.parse(localStorage.getItem("resultados7Wonders")) || [];
-  const container = document.getElementById("historyContent");
+  const container = document.getElementById("historyEntries");
 
-  if (historico.length === 0) {
+  const filtrado = historico.filter(
+    (entry) => filtro === "all" || entry.gameMode === filtro
+  );
+
+  if (filtrado.length === 0) {
     container.innerHTML = "<p>Nenhuma partida salva ainda.</p>";
     return;
   }
 
   // Monta HTML do histórico
-  let html = historico
+  let html = filtrado
     .map((entry, index) => {
       const rows = entry.players
         .sort((a, b) => b.pontuacao - a.pontuacao)
         .map((p) => `<tr><td>${p.nome}</td><td>${p.pontuacao}</td></tr>`)
         .join("");
 
+      const modoJogo =
+        entry.gameMode === "7wondersDuel" ? "7 Wonders Duel" : "7 Wonders";
+
       return `
       <div class="history-entry mb-4 border border-secondary rounded p-2">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="mb-0">Partida ${index + 1} - ${entry.date}</h6>
+          <h6 class="mb-0">${modoJogo} - ${entry.date}</h6>
           <button class="btn btn-sm btn-danger" onclick="confirmarRemocao(${index})">Remover</button>
         </div>
         <table class="table table-dark table-striped text-center mb-0">
@@ -397,6 +480,18 @@ document.addEventListener("click", function (e) {
   if (e.target.closest("#showHistory")) {
     mostrarHistorico();
   }
+});
+
+document.getElementById("filtroTodos").addEventListener("change", (e) => {
+  mostrarHistorico();
+});
+
+document.getElementById("filtro7W").addEventListener("change", (e) => {
+  mostrarHistorico();
+});
+
+document.getElementById("filtro7WDuel").addEventListener("change", (e) => {
+  mostrarHistorico();
 });
 
 // Atualiza a tabela ao adicionar/remover jogadores
