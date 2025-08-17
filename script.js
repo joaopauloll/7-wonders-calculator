@@ -45,12 +45,21 @@ document.querySelectorAll("input[name='gameMode']").forEach((radio) => {
     if (gameMode === "7wonders") {
       addPlayer();
       document.getElementById("addPlayerBtn").classList.remove("d-none");
+      document
+        .getElementById("tdNomeJogador")
+        .classList.remove("nome-jogador-7wd");
+      document.getElementById("tdNomeJogador").classList.add("nome-jogador-7w");
     } else if (gameMode === "7wondersDuel") {
       addPlayer();
       addPlayer();
       document.getElementById("addPlayerBtn").classList.add("d-none");
-      document.getElementById("removePlayerBtn(0)").classList.add("d-none");
       document.getElementById("removePlayerBtn(1)").classList.add("d-none");
+      document
+        .getElementById("tdNomeJogador")
+        .classList.remove("nome-jogador-7w");
+      document
+        .getElementById("tdNomeJogador")
+        .classList.add("nome-jogador-7wd");
     }
   });
 });
@@ -143,6 +152,7 @@ function addPlayer() {
   playerCount++;
   idCount++;
   updateTabelaPontuacao();
+  document.getElementById("removePlayerBtn(0)").classList.add("d-none");
   if (playerCount === 7) {
     document.getElementById("addPlayerBtn").classList.add("d-none");
   }
@@ -296,7 +306,7 @@ function updateTabelaPontuacao() {
       <table class="table table-dark table-bordered text-center align-middle tabela-detalhada">
         <thead>
           <tr>
-            <th class="nome-jogador"><i class="bi bi-person-fill"></i></th>
+            <th id="thNomeJogador" class="nome-jogador-7w"><i class="bi bi-person-fill"></i></th>
             <th class="col-civil" data-bs-toggle="tooltip" title="Civil"><i class="bi bi-building"></i></th>
             <th class="col-comercial" data-bs-toggle="tooltip" title="Comercial"><i class="bi bi-shop"></i></th>
             <th class="col-guildas" data-bs-toggle="tooltip" title="Guildas"><i class="bi bi-people"></i></th>
@@ -317,7 +327,7 @@ function updateTabelaPontuacao() {
             .map(
               (p) => `
             <tr>
-              <td class="nome-jogador">${p.nome}</td>
+              <td id="tdNomeJogador" class="nome-jogador-7w">${p.nome}</td>
               <td class="col-civil">${p.civis}</td>
               <td class="col-comercial">${p.comercial}</td>
               <td class="col-guildas">${p.guildas}</td>
@@ -476,6 +486,7 @@ function atualizarHistoricoParaGameMode() {
   }
 }
 
+// Evento para confirmar remoção
 document
   .getElementById("confirmDeleteBtn")
   .addEventListener("click", function () {
@@ -492,26 +503,25 @@ document
     }
   });
 
+// Eventos para salvar resultados e mostrar histórico
 document.addEventListener("click", function (e) {
   if (e.target.closest("#saveResults")) {
     salvarResultados();
   }
 });
-
 document.addEventListener("click", function (e) {
   if (e.target.closest("#showHistory")) {
     mostrarHistorico();
   }
 });
 
+// Eventos para filtros do histórico
 document.getElementById("filtroTodos").addEventListener("change", (e) => {
   mostrarHistorico();
 });
-
 document.getElementById("filtro7W").addEventListener("change", (e) => {
   mostrarHistorico();
 });
-
 document.getElementById("filtro7WDuel").addEventListener("change", (e) => {
   mostrarHistorico();
 });
