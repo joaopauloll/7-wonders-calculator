@@ -342,7 +342,7 @@ function updateTabelaPontuacao() {
       </button>
     </div>
     <div class="d-flex gap-2 mb-3 mt-4">
-    <button id="showHistory" class="btn btn-info flex-grow-1" data-bs-toggle="modal" data-bs-target="#historyModal">Histórico de Partidas</button>
+    <button id="showHistory" class="btn btn-info flex-grow-1" data-bs-toggle="modal" data-bs-target="#historyModal">Histórico</button>
       <button id="saveResults" class="btn btn-warning flex-grow-1">Salvar Partida</button>
     </div>
   `;
