@@ -3,6 +3,11 @@ let idCount = 0;
 let playersData = [];
 let rodadaParaRemover = null;
 let gameMode = "7wonders"; // padrão
+let lideresAtivo = false;
+
+const expansoesCheckbox = document.getElementById("expansoes");
+const expansoesOpcoes = document.getElementById("expansoesOpcoes");
+const lideresCheckbox = document.getElementById("lideresExpansao");
 
 atualizarHistoricoParaGameMode();
 
@@ -10,29 +15,8 @@ document.querySelectorAll("input[name='gameMode']").forEach((radio) => {
   radio.addEventListener("change", (e) => {
     const newMode = e.target.value;
 
-    // Verifica se algum campo dos jogadores está preenchido
-    let algumPreenchido = false;
-    for (let i = 0; i < playerCount; i++) {
-      const playerDiv = document.getElementById(`player-${i}`);
-      if (!playerDiv) continue;
-      const inputs = playerDiv.querySelectorAll("input");
-      inputs.forEach((input) => {
-        if (input.value) algumPreenchido = true;
-      });
-      if (algumPreenchido) break;
-    }
-
-    // Se tiver algum preenchido, pergunta antes de mudar
-    if (algumPreenchido) {
-      if (
-        !confirm(
-          "Você tem certeza de que deseja mudar o modo de jogo? Isso irá redefinir todos os jogadores e suas pontuações."
-        )
-      ) {
-        // Reverte o radio para o anterior
-        document.querySelector(`input[value='${gameMode}']`).checked = true;
-        return;
-      }
+    if (!confirmarAlteracaoModoJogo()) {
+      return;
     }
 
     // Limpa os players e reseta contador
@@ -49,6 +33,7 @@ document.querySelectorAll("input[name='gameMode']").forEach((radio) => {
         .getElementById("tdNomeJogador")
         .classList.remove("nome-jogador-7wd");
       document.getElementById("tdNomeJogador").classList.add("nome-jogador-7w");
+      expansoesCheckbox.disabled = false;
     } else if (gameMode === "7wondersDuel") {
       addPlayer();
       addPlayer();
@@ -60,6 +45,13 @@ document.querySelectorAll("input[name='gameMode']").forEach((radio) => {
       document
         .getElementById("tdNomeJogador")
         .classList.add("nome-jogador-7wd");
+
+      expansoesOpcoes.classList.add("d-none");
+      expansoesCheckbox.checked = false;
+      expansoesCheckbox.disabled = true;
+      lideresAtivo = false;
+      lideresCheckbox.checked = false;
+      updateTabelaPontuacao();
     }
   });
 });
@@ -96,16 +88,33 @@ function createPlayerForm(id) {
           <input type="number" class="form-control" id="progresso-${id}" min="0" />
         </div>
       </div>`;
+  const firstLine =
+    lideresAtivo && gameMode === "7wonders"
+      ? `
+      <div class="row mb-2">
+          <div class="col-6">
+            <label class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nome-${id}" placeholder="Jogador ${
+          id + 1
+        }">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Líderes</label>
+            <input type="number" class="form-control" id="lideres-${id}">
+          </div>
+        </div>`
+      : `
+      <div class="mb-2">
+          <label class="form-label">Nome</label>
+          <input type="text" class="form-control" id="nome-${id}" placeholder="Jogador ${
+          id + 1
+        }">
+        </div>`;
   return `
     <div class="player-block" id="player-${id}">
       <button type="button" class="btn btn-danger btn-sm remove-player-btn" id="removePlayerBtn(${id})" onclick="removePlayer(${id})">Remover</button>
       <form onsubmit="event.preventDefault(); calcularPontuacao(${id});">
-        <div class="mb-2">
-          <label class="form-label">Nome</label>
-          <input type="text" class="form-control" id="nome-${id}" placeholder="Jogador ${
-    id + 1
-  }">
-        </div>
+        ${firstLine}
         <div class="row mb-2">
           <div class="col-6">
             <label class="form-label">Civil</label>
@@ -176,10 +185,16 @@ function calcularPontuacao(id) {
     parseInt(document.getElementById(`comercial-${id}`).value) || 0;
   const guildas = parseInt(document.getElementById(`guildas-${id}`).value) || 0;
 
+  let lideres = 0;
   let ciencia = 0;
   let progresso = 0;
 
   if (gameMode === "7wonders") {
+    // Pontos de líderes se a expansão estiver ativa
+    if (lideresAtivo) {
+      lideres = parseInt(document.getElementById(`lideres-${id}`).value) || 0;
+    }
+
     // Ciência padrão 7 Wonders
     const pedra =
       parseInt(document.getElementById(`ciencia_pedra-${id}`).value) || 0;
@@ -207,7 +222,8 @@ function calcularPontuacao(id) {
     comercial +
     guildas +
     ciencia +
-    progresso;
+    progresso +
+    lideres;
   document.getElementById(`pontuacaoTotal-${id}`).textContent = total;
 
   updateTabelaPontuacao();
@@ -233,10 +249,15 @@ function getPlayersPontuacao() {
     const guildas =
       parseInt(document.getElementById(`guildas-${i}`).value) || 0;
 
+    let lideres = 0;
     let ciencia = 0;
     let progresso = 0;
 
     if (gameMode === "7wonders") {
+      if (lideresAtivo) {
+        lideres = parseInt(document.getElementById(`lideres-${i}`).value) || 0;
+      }
+
       const pedra =
         parseInt(document.getElementById(`ciencia_pedra-${i}`).value) || 0;
       const abaco =
@@ -263,7 +284,8 @@ function getPlayersPontuacao() {
       comercial +
       guildas +
       ciencia +
-      progresso;
+      progresso +
+      lideres;
 
     players.push({
       nome,
@@ -276,6 +298,7 @@ function getPlayersPontuacao() {
       guildas,
       ciencia,
       progresso,
+      lideres,
     });
   }
   return players;
@@ -307,6 +330,11 @@ function updateTabelaPontuacao() {
         <thead>
           <tr>
             <th id="thNomeJogador" class="nome-jogador-7w"><i class="bi bi-person-fill"></i></th>
+            ${
+              lideresAtivo
+                ? `<th class="col-lideres" data-bs-toggle="tooltip" title="Líderes"><i class="bi bi-person-badge"></i></th>`
+                : ""
+            }
             <th class="col-civil" data-bs-toggle="tooltip" title="Civil"><i class="bi bi-building"></i></th>
             <th class="col-comercial" data-bs-toggle="tooltip" title="Comercial"><i class="bi bi-shop"></i></th>
             <th class="col-guildas" data-bs-toggle="tooltip" title="Guildas"><i class="bi bi-people"></i></th>
@@ -328,6 +356,7 @@ function updateTabelaPontuacao() {
               (p) => `
             <tr>
               <td id="tdNomeJogador" class="nome-jogador-7w">${p.nome}</td>
+              ${lideresAtivo ? `<td class="col-lideres">${p.lideres}</td>` : ""}
               <td class="col-civil">${p.civis}</td>
               <td class="col-comercial">${p.comercial}</td>
               <td class="col-guildas">${p.guildas}</td>
@@ -484,6 +513,73 @@ function atualizarHistoricoParaGameMode() {
       "Histórico atualizado com gameMode padrão para partidas antigas."
     );
   }
+}
+
+function confirmarAlteracaoModoJogo() {
+  // Verifica se algum campo dos jogadores está preenchido
+  let algumPreenchido = false;
+  for (let i = 0; i < playerCount; i++) {
+    const playerDiv = document.getElementById(`player-${i}`);
+    if (!playerDiv) continue;
+    const inputs = playerDiv.querySelectorAll("input");
+    inputs.forEach((input) => {
+      if (input.value) algumPreenchido = true;
+    });
+    if (algumPreenchido) break;
+  }
+
+  // Se tiver algum preenchido, pergunta antes de mudar
+  if (algumPreenchido) {
+    if (
+      !confirm(
+        "Você tem certeza de que deseja mudar o modo de jogo? Isso irá redefinir todos os jogadores e suas pontuações."
+      )
+    ) {
+      // Reverte o radio para o anterior
+      document.querySelector(`input[value='${gameMode}']`).checked = true;
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+}
+
+expansoesCheckbox.addEventListener("change", () => {
+  if (expansoesCheckbox.checked && gameMode === "7wonders") {
+    expansoesOpcoes.classList.remove("d-none");
+  } else {
+    expansoesOpcoes.classList.add("d-none");
+    lideresCheckbox.checked = false;
+    lideresAtivo = false;
+  }
+  atualizarFormulario();
+  updateTabelaPontuacao();
+});
+
+lideresCheckbox.addEventListener("change", () => {
+  if (!confirmarAlteracaoModoJogo()) {
+    // Mantem o estado anterior do checkbox
+    lideresCheckbox.checked = !lideresCheckbox.checked;
+    return;
+  }
+  if (lideresCheckbox.checked) {
+    lideresAtivo = true;
+  } else {
+    lideresAtivo = false;
+  }
+  atualizarFormulario();
+  updateTabelaPontuacao();
+});
+
+function atualizarFormulario() {
+  for (let i = 0; i < playerCount; i++) {
+    const playerDiv = document.getElementById(`player-${i}`);
+    if (!playerDiv) continue;
+    playerDiv.outerHTML = createPlayerForm(i);
+  }
+  document.getElementById("removePlayerBtn(0)").classList.add("d-none");
 }
 
 // Evento para confirmar remoção
