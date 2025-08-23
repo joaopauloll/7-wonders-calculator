@@ -563,6 +563,7 @@ expansoesCheckbox.addEventListener("change", () => {
     if (lideresCheckbox.checked) {
       if (!confirmarAlteracaoModoJogo()) {
         expansoesCheckbox.checked = !expansoesCheckbox.checked;
+        expansoesOpcoes.classList.remove("d-none");
         return;
       }
       lideresCheckbox.checked = false;
