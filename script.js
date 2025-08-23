@@ -559,11 +559,18 @@ expansoesCheckbox.addEventListener("change", () => {
     expansoesOpcoes.classList.remove("d-none");
   } else {
     expansoesOpcoes.classList.add("d-none");
-    lideresCheckbox.checked = false;
-    lideresAtivo = false;
+
+    if (lideresCheckbox.checked) {
+      if (!confirmarAlteracaoModoJogo()) {
+        expansoesCheckbox.checked = !expansoesCheckbox.checked;
+        return;
+      }
+      lideresCheckbox.checked = false;
+      lideresAtivo = false;
+      limparFormulario();
+      updateTabelaPontuacao();
+    }
   }
-  atualizarFormulario();
-  updateTabelaPontuacao();
 });
 
 lideresCheckbox.addEventListener("change", () => {
@@ -577,17 +584,15 @@ lideresCheckbox.addEventListener("change", () => {
   } else {
     lideresAtivo = false;
   }
-  atualizarFormulario();
+  limparFormulario();
   updateTabelaPontuacao();
 });
 
-function atualizarFormulario() {
-  for (let i = 0; i < playerCount; i++) {
-    const playerDiv = document.getElementById(`player-${i}`);
-    if (!playerDiv) continue;
-    playerDiv.outerHTML = createPlayerForm(i);
-  }
-  document.getElementById("removePlayerBtn(0)").classList.add("d-none");
+function limparFormulario() {
+  document.getElementById("players").innerHTML = "";
+  playerCount = 0;
+  idCount = 0;
+  addPlayer();
 }
 
 // Evento para confirmar remoção
