@@ -418,6 +418,9 @@ function salvarResultados() {
   const players = getPlayersPontuacao(); // array com {nome, pontuacao}
   if (players.length === 0) return;
 
+  const expansoes = [];
+  if (lideresAtivo) expansoes.push("Líderes");
+
   // Recupera histórico atual
   const historico =
     JSON.parse(localStorage.getItem("resultados7Wonders")) || [];
@@ -426,6 +429,7 @@ function salvarResultados() {
   historico.push({
     date: new Date().toLocaleString(),
     gameMode: gameMode,
+    expansoes: expansoes,
     players: players,
   });
 
@@ -465,7 +469,11 @@ function mostrarHistorico() {
         .join("");
 
       const modoJogo =
-        entry.gameMode === "7wondersDuel" ? "7 Wonders Duel" : "7 Wonders";
+        entry.gameMode === "7wondersDuel"
+          ? "7 Wonders Duel"
+          : entry.expansoes && entry.expansoes.length > 0
+          ? `7 Wonders + ${entry.expansoes.join(", ")}`
+          : "7 Wonders";
 
       return `
       <div class="history-entry mb-4 border border-secondary rounded p-2">
