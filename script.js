@@ -112,7 +112,7 @@ function createPlayerForm(id) {
         </div>`;
   return `
     <div class="player-block" id="player-${id}">
-      <button type="button" class="btn btn-danger btn-sm remove-player-btn" id="removePlayerBtn(${id})" onclick="removePlayer(${id})">Remover</button>
+      <button type="button" class="btn btn-danger btn-sm remove-player-btn" id="removePlayerBtn(${id})" onclick="removePlayer(${id})"><i class="bi bi-x-lg"></i></button>
       <form onsubmit="event.preventDefault(); calcularPontuacao(${id});">
         ${firstLine}
         <div class="row mb-2">
